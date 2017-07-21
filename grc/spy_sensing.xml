@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<block>
+	<name>sensing</name>
+	<key>spy_sensing</key>
+	<category>[spy]</category>
+	<import>import spy</import>
+	<make>spy.sensing($fft_size, $sampling_rate)</make>
+
+	<param>
+		<name>FFT size</name>
+		<key>fft_size</key>
+		<value>1024</value>
+		<type>int</type>
+	</param>
+
+	<param>
+		<name>Sampling Rate</name>
+		<key>sampling_rate</key>
+		<value>10000000.0</value>
+		<type>float</type>
+	</param>
+
+	<sink>
+		<name>in0</name>
+		<type>complex</type>
+	</sink>
+
+
+</block>
