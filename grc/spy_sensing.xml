@@ -4,7 +4,7 @@
   <key>spy_sensing</key>
   <category>[spy]</category>
   <import>import spy</import>
-  <make>spy.sensing_$(method.type)($fft_size, $samp_rate)</make>
+  <make>spy.sensing_$(method)($fft_size, $samp_rate)</make>
   <!-- Make one 'param' node for every Parameter you want settable from the GUI.
        Sub-nodes:
        * name
@@ -31,12 +31,10 @@
 		<option>
 			<name>Energy-based</name>
 			<key>energy</key>
-			<opt>type:energy</opt>
 		</option>
 		<option>
 			<name>Eigenvalue-based</name>
 			<key>eigen</key>
-			<opt>type:eigen</opt>
 		</option>
 	</param>
 
