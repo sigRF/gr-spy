@@ -19,8 +19,8 @@
  */
 
 
-#ifndef INCLUDED_SPY_SENSING_H
-#define INCLUDED_SPY_SENSING_H
+#ifndef INCLUDED_SPY_SENSING_ENERGY_H
+#define INCLUDED_SPY_SENSING_ENERGY_H
 
 #include <spy/api.h>
 #include <gnuradio/sync_block.h>
@@ -33,24 +33,24 @@ namespace gr {
      * \ingroup spy
      *
      */
-    class SPY_API sensing : virtual public gr::sync_block
+    class SPY_API sensing_energy : virtual public gr::sync_block
     {
      public:
-      typedef boost::shared_ptr<sensing> sptr;
+      typedef boost::shared_ptr<sensing_energy> sptr;
 
       /*!
-       * \brief Return a shared_ptr to a new instance of spy::sensing.
+       * \brief Return a shared_ptr to a new instance of spy::sensing_energy.
        *
-       * To avoid accidental use of raw pointers, spy::sensing's
+       * To avoid accidental use of raw pointers, spy::sensing_energy's
        * constructor is in a private implementation
-       * class. spy::sensing::make is the public interface for
+       * class. spy::sensing_energy::make is the public interface for
        * creating new instances.
        */
-      static sptr make(size_t fft_size, double sampling_rate);
+      static sptr make(size_t fft_size, double samp_rate);
     };
 
   } // namespace spy
 } // namespace gr
 
-#endif /* INCLUDED_SPY_SENSING_H */
+#endif /* INCLUDED_SPY_SENSING_ENERGY_H */
 

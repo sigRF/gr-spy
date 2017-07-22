@@ -23,47 +23,44 @@
 #endif
 
 #include <gnuradio/io_signature.h>
-#include "sensing_impl.h"
+#include "sensing_eigen_impl.h"
 
-namespace gr
-{
-  namespace spy
-  {
+namespace gr {
+  namespace spy {
 
-    sensing::sptr
-    sensing::make (size_t fft_size, double sampling_rate)
+    sensing_eigen::sptr
+    sensing_eigen::make(size_t fft_size, double samp_rate)
     {
-      return gnuradio::get_initial_sptr (
-	  new sensing_impl (fft_size, sampling_rate));
+      return gnuradio::get_initial_sptr
+        (new sensing_eigen_impl(fft_size, samp_rate));
     }
 
     /*
      * The private constructor
      */
-    sensing_impl::sensing_impl (size_t fft_size, double sampling_rate) :
-	    gr::sync_block ("sensing",
-			    gr::io_signature::make (1, 1, sizeof(gr_complex)),
-			    gr::io_signature::make (0, 0, 0)),
-	    d_fft_size (fft_size),
-	    d_sampling_rate (sampling_rate)
-    {
-    }
+    sensing_eigen_impl::sensing_eigen_impl(size_t fft_size, double samp_rate)
+      : gr::sync_block("sensing_eigen",
+              gr::io_signature::make(1, 1, sizeof(gr_complex)),
+              gr::io_signature::make(0, 0, 0))
+    {}
 
     /*
      * Our virtual destructor.
      */
-    sensing_impl::~sensing_impl ()
+    sensing_eigen_impl::~sensing_eigen_impl()
     {
     }
 
     int
-    sensing_impl::work (int noutput_items,
-			gr_vector_const_void_star &input_items,
-			gr_vector_void_star &output_items)
+    sensing_eigen_impl::work(int noutput_items,
+        gr_vector_const_void_star &input_items,
+        gr_vector_void_star &output_items)
     {
+      const gr_complex *in = (const gr_complex *) input_items[0];
+      //<+OTYPE+> *out = (<+OTYPE+> *) output_items[0];
 
-      const gr_complex *in0 = (const gr_complex *) input_items[0];
       // Do <+signal processing+>
+      std::cout << "EIGEN METHOD!" << std::endl;
 
       // Tell runtime system how many output items we produced.
       return noutput_items;

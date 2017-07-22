@@ -1,29 +1,59 @@
 <?xml version="1.0"?>
 <block>
-	<name>sensing</name>
-	<key>spy_sensing</key>
-	<category>[spy]</category>
-	<import>import spy</import>
-	<make>spy.sensing($fft_size, $sampling_rate)</make>
-
-	<param>
-		<name>FFT size</name>
-		<key>fft_size</key>
-		<value>1024</value>
-		<type>int</type>
+  <name>sensing</name>
+  <key>spy_sensing</key>
+  <category>[spy]</category>
+  <import>import spy</import>
+  <make>spy.sensing_$(method.type)($fft_size, $samp_rate)</make>
+  <!-- Make one 'param' node for every Parameter you want settable from the GUI.
+       Sub-nodes:
+       * name
+       * key (makes the value accessible as $keyname, e.g. in the make node)
+       * type -->
+  <param>
+    <name>FFT size</name>
+    <key>fft_size</key>
+    <value>1024</value>
+    <type>int</type>
+  </param>
+  
+  <param>
+    <name>Sampling rate</name>
+    <key>samp_rate</key>
+    <value>1000000</value>
+    <type>float</type>
+  </param>
+  
+  <param>
+		<name>Method</name>
+		<key>method</key>
+		<type>enum</type>
+		<option>
+			<name>Energy-based</name>
+			<key>energy</key>
+			<opt>type:energy</opt>
+		</option>
+		<option>
+			<name>Eigenvalue-based</name>
+			<key>eigen</key>
+			<opt>type:eigen</opt>
+		</option>
 	</param>
 
-	<param>
-		<name>Sampling Rate</name>
-		<key>sampling_rate</key>
-		<value>10000000.0</value>
-		<type>float</type>
-	</param>
+  <!-- Make one 'sink' node per input. Sub-nodes:
+       * name (an identifier for the GUI)
+       * type
+       * vlen
+       * optional (set to 1 for optional inputs) -->
+  <sink>
+    <name>in</name>
+    <type>complex</type>
+  </sink>
 
-	<sink>
-		<name>in0</name>
-		<type>complex</type>
-	</sink>
-
-
+  <!-- Make one 'source' node per output. Sub-nodes:
+       * name (an identifier for the GUI)
+       * type
+       * vlen
+       * optional (set to 1 for optional inputs) -->
+       
 </block>

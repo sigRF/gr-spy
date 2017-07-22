@@ -8,9 +8,11 @@
 %include "spy_swig_doc.i"
 
 %{
-#include "spy/sensing.h"
+#include "spy/sensing_energy.h"
+#include "spy/sensing_eigen.h"
 %}
 
-
-%include "spy/sensing.h"
-GR_SWIG_BLOCK_MAGIC2(spy, sensing);
+%include "spy/sensing_energy.h"
+GR_SWIG_BLOCK_MAGIC2(spy, sensing_energy);
+%include "spy/sensing_eigen.h"
+GR_SWIG_BLOCK_MAGIC2(spy, sensing_eigen);

@@ -18,36 +18,31 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef INCLUDED_SPY_SENSING_IMPL_H
-#define INCLUDED_SPY_SENSING_IMPL_H
+#ifndef INCLUDED_SPY_SENSING_EIGEN_IMPL_H
+#define INCLUDED_SPY_SENSING_EIGEN_IMPL_H
 
-#include <spy/sensing.h>
+#include <spy/sensing_eigen.h>
 
-namespace gr
-{
-  namespace spy
-  {
+namespace gr {
+  namespace spy {
 
-    class sensing_impl : public sensing
+    class sensing_eigen_impl : public sensing_eigen
     {
-    private:
-      /* The FFT size */
-      const size_t d_fft_size;
-      /* Operational sampling rate */
-      const double d_sampling_rate;
+     private:
+      // Nothing to declare in this block.
 
-    public:
-      sensing_impl (size_t fft_size, double sampling_rate);
-      ~sensing_impl ();
+     public:
+      sensing_eigen_impl(size_t fft_size, double samp_rate);
+      ~sensing_eigen_impl();
 
       // Where all the action really happens
-      int
-      work (int noutput_items, gr_vector_const_void_star &input_items,
-	    gr_vector_void_star &output_items);
+      int work(int noutput_items,
+         gr_vector_const_void_star &input_items,
+         gr_vector_void_star &output_items);
     };
 
   } // namespace spy
 } // namespace gr
 
-#endif /* INCLUDED_SPY_SENSING_IMPL_H */
+#endif /* INCLUDED_SPY_SENSING_EIGEN_IMPL_H */
 

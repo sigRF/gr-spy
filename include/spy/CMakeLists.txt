@@ -22,5 +22,6 @@
 ########################################################################
 install(FILES
     api.h
-    sensing.h DESTINATION include/spy
+    sensing_energy.h
+    sensing_eigen.h DESTINATION include/spy
 )
