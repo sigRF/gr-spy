@@ -24,10 +24,9 @@ include(GrPlatform) #define LIB_SUFFIX
 
 include_directories(${Boost_INCLUDE_DIR})
 link_directories(${Boost_LIBRARY_DIRS})
-
 list(APPEND spy_sources
-    sensing_impl.cc
-)
+    sensing_energy_impl.cc
+    sensing_eigen_impl.cc )
 
 set(spy_sources "${spy_sources}" PARENT_SCOPE)
 if(NOT spy_sources)
