@@ -22,7 +22,9 @@
 ########################################################################
 include(GrPlatform) #define LIB_SUFFIX
 
-include_directories(${Boost_INCLUDE_DIR})
+include_directories(${Boost_INCLUDE_DIR}
+					${GR_FFT_INCLUDE_DIRS})
+					
 link_directories(${Boost_LIBRARY_DIRS})
 list(APPEND spy_sources
     sensing_energy_impl.cc
@@ -35,7 +37,11 @@ if(NOT spy_sources)
 endif(NOT spy_sources)
 
 add_library(gnuradio-spy SHARED ${spy_sources})
-target_link_libraries(gnuradio-spy ${Boost_LIBRARIES} ${GNURADIO_ALL_LIBRARIES})
+target_link_libraries(gnuradio-spy 
+					  ${Boost_LIBRARIES} 
+					  ${GNURADIO_ALL_LIBRARIES}
+				      ${VOLK_LIBRARIES}
+    				  gnuradio-fft)
 set_target_properties(gnuradio-spy PROPERTIES DEFINE_SYMBOL "gnuradio_spy_EXPORTS")
 
 if(APPLE)

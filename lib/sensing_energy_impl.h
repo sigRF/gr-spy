@@ -22,6 +22,9 @@
 #define INCLUDED_SPY_SENSING_ENERGY_IMPL_H
 
 #include <spy/sensing_energy.h>
+#include <gnuradio/fft/fft.h>
+#include <volk/volk.h>
+#include <math.h>
 
 namespace gr {
   namespace spy {
@@ -29,7 +32,12 @@ namespace gr {
     class sensing_energy_impl : public sensing_energy
     {
      private:
-      // Nothing to declare in this block.
+      size_t d_fft_size;
+      double d_samp_rate;
+      fft::fft_complex *d_fft;
+      gr_complex *d_fftshift;
+      float *d_psd;
+      float *d_flat_top_win;
 
      public:
       sensing_energy_impl(size_t fft_size, double samp_rate);
