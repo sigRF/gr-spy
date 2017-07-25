@@ -26,27 +26,65 @@
 #include <volk/volk.h>
 #include <math.h>
 
-namespace gr {
-  namespace spy {
+typedef enum
+{
+  NOISE_FLOOR_ESTIMATION = 0, SPECTRUM_SENSING
+} sensing_type;
+
+namespace gr
+{
+  namespace spy
+  {
 
     class sensing_energy_impl : public sensing_energy
     {
-     private:
+    private:
       size_t d_fft_size;
+      size_t d_num_channels;
+      size_t d_fft_queue;
+      size_t d_fft_cnt;
+      size_t d_subs_per_channel;
+
       double d_samp_rate;
+
+      bool d_nf_est;
+
       fft::fft_complex *d_fft;
+
       gr_complex *d_fftshift;
+
       float *d_psd;
       float *d_flat_top_win;
+      float *d_noise_floor_vec_db;
+      float *d_channel_stats;
 
-     public:
-      sensing_energy_impl(size_t fft_size, double samp_rate);
-      ~sensing_energy_impl();
+      uint8_t d_mode;
+      float d_occup_percent;
+
+      float d_noise_floor;
+      float d_sec_per_fft;
+      float d_cycles_nf_left;
+      float d_threshold;
+
+      void
+      message_print(float *vector, int vector_size);
+      void
+      set_nf (float val);
+      void
+      est_psd (gr_complex *fft_in, const gr_complex *in);
+      void
+      add_to_nf (float val);
+
+    public:
+      sensing_energy_impl (size_t fft_size, double samp_rate, bool nf_est,
+			   float noise_floor, int num_channels,
+			   float threshold, uint8_t occup_percent);
+      ~sensing_energy_impl ();
 
       // Where all the action really happens
-      int work(int noutput_items,
-         gr_vector_const_void_star &input_items,
-         gr_vector_void_star &output_items);
+      int
+      work (int noutput_items, gr_vector_const_void_star &input_items,
+	    gr_vector_void_star &output_items);
     };
 
   } // namespace spy

@@ -18,15 +18,16 @@
  * Boston, MA 02110-1301, USA.
  */
 
-
 #ifndef INCLUDED_SPY_SENSING_ENERGY_H
 #define INCLUDED_SPY_SENSING_ENERGY_H
 
 #include <spy/api.h>
 #include <gnuradio/sync_block.h>
 
-namespace gr {
-  namespace spy {
+namespace gr
+{
+  namespace spy
+  {
 
     /*!
      * \brief <+description of block+>
@@ -35,7 +36,7 @@ namespace gr {
      */
     class SPY_API sensing_energy : virtual public gr::sync_block
     {
-     public:
+    public:
       typedef boost::shared_ptr<sensing_energy> sptr;
 
       /*!
@@ -46,7 +47,9 @@ namespace gr {
        * class. spy::sensing_energy::make is the public interface for
        * creating new instances.
        */
-      static sptr make(size_t fft_size, double samp_rate);
+      static sptr
+      make (size_t fft_size, double samp_rate, bool nf_est, float noise_floor,
+	    int num_channels, float threshold, uint8_t occup_percent);
     };
 
   } // namespace spy
