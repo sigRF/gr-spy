@@ -26,11 +26,6 @@
 #include <volk/volk.h>
 #include <math.h>
 
-typedef enum
-{
-  NOISE_FLOOR_ESTIMATION = 0, SPECTRUM_SENSING
-} sensing_type;
-
 namespace gr
 {
   namespace spy
@@ -52,6 +47,7 @@ namespace gr
       fft::fft_complex *d_fft;
 
       gr_complex *d_fftshift;
+      gr_complex *d_fft_in;
 
       float *d_psd;
       float *d_flat_top_win;
@@ -63,22 +59,27 @@ namespace gr
 
       float d_noise_floor;
       float d_sec_per_fft;
-      float d_cycles_nf_left;
       float d_threshold;
 
+      size_t d_cycles_nf_left;
+
       void
-      message_print(float *vector, int vector_size);
+      sense_and_decide (const gr_complex *in);
+      void
+      refresh_nf (const gr_complex *in);
+      void
+      message_print (float *vector, int vector_size);
       void
       set_nf (float val);
       void
-      est_psd (gr_complex *fft_in, const gr_complex *in);
+      calculate_psd (const gr_complex *in);
       void
       add_to_nf (float val);
 
     public:
       sensing_energy_impl (size_t fft_size, double samp_rate, bool nf_est,
-			   float noise_floor, int num_channels,
-			   float threshold, uint8_t occup_percent);
+			   float noise_floor, int num_channels, float threshold,
+			   uint8_t occup_percent);
       ~sensing_energy_impl ();
 
       // Where all the action really happens

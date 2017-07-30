@@ -1,10 +1,10 @@
 <?xml version="1.0"?>
 <block>
-	<name>Sense</name>
-	<key>spy_sensing</key>
+	<name>Energy sense</name>
+	<key>spy_sensing_energy</key>
 	<category>[Spy]</category>
 	<import>import spy</import>
-	<make>spy.sensing_$(method)($fft_size, $samp_rate, $nf_est,
+	<make>spy.sensing_energy($fft_size, $samp_rate, $nf_est,
 		$noise_floor, $num_channels, $threshold, $occup_percent)</make>
 	<!-- Make one 'param' node for every Parameter you want settable from the 
 		GUI. Sub-nodes: * name * key (makes the value accessible as $keyname, e.g. 
@@ -21,20 +21,6 @@
 		<key>samp_rate</key>
 		<value>1000000</value>
 		<type>float</type>
-	</param>
-
-	<param>
-		<name>Method</name>
-		<key>method</key>
-		<type>enum</type>
-		<option>
-			<name>Energy-based</name>
-			<key>energy</key>
-		</option>
-		<option>
-			<name>Eigenvalue-based</name>
-			<key>eigen</key>
-		</option>
 	</param>
 
 	<param>

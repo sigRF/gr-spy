@@ -30,4 +30,10 @@
 #  define SPY_API __GR_ATTR_IMPORT
 #endif
 
+typedef enum
+{
+  NOISE_FLOOR_ESTIMATION = 0,
+  SPECTRUM_SENSING
+} sensing_type;
+
 #endif /* INCLUDED_SPY_API_H */

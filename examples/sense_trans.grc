@@ -1002,7 +1002,7 @@
     </param>
   </block>
   <block>
-    <key>spy_sensing</key>
+    <key>spy_sensing_energy</key>
     <param>
       <key>nf_est</key>
       <value>True</value>
@@ -1013,7 +1013,7 @@
     </param>
     <param>
       <key>num_channels</key>
-      <value>16</value>
+      <value>8</value>
     </param>
     <param>
       <key>comment</key>
@@ -1029,11 +1029,11 @@
     </param>
     <param>
       <key>fft_size</key>
-      <value>1024</value>
+      <value>128</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(871, 200)</value>
+      <value>(871, 204)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -1041,7 +1041,7 @@
     </param>
     <param>
       <key>id</key>
-      <value>spy_sensing_0</value>
+      <value>spy_sensing_energy_0</value>
     </param>
     <param>
       <key>noise_floor</key>
@@ -1050,10 +1050,6 @@
     <param>
       <key>maxoutbuf</key>
       <value>0</value>
-    </param>
-    <param>
-      <key>method</key>
-      <value>energy</value>
     </param>
     <param>
       <key>minoutbuf</key>
@@ -1110,7 +1106,7 @@
   </connection>
   <connection>
     <source_block_id>blocks_throttle_0</source_block_id>
-    <sink_block_id>spy_sensing_0</sink_block_id>
+    <sink_block_id>spy_sensing_energy_0</sink_block_id>
     <source_key>0</source_key>
     <sink_key>0</sink_key>
   </connection>
@@ -1121,7 +1117,7 @@
     <sink_key>0</sink_key>
   </connection>
   <connection>
-    <source_block_id>spy_sensing_0</source_block_id>
+    <source_block_id>spy_sensing_energy_0</source_block_id>
     <sink_block_id>blocks_message_debug_0</sink_block_id>
     <source_key>out</source_key>
     <sink_key>print</sink_key>

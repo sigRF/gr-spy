@@ -29,10 +29,10 @@ namespace gr
 {
   namespace spy
   {
-
     sensing_energy::sptr
     sensing_energy::make (size_t fft_size, double samp_rate, bool nf_est,
-			  float noise_floor, int num_channels, float threshold, uint8_t occup_percent)
+			  float noise_floor, int num_channels, float threshold,
+			  uint8_t occup_percent)
     {
       return gnuradio::get_initial_sptr (
 	  new sensing_energy_impl (fft_size, samp_rate, nf_est, noise_floor,
@@ -45,7 +45,8 @@ namespace gr
     sensing_energy_impl::sensing_energy_impl (size_t fft_size, double samp_rate,
     bool nf_est,
 					      float noise_floor,
-					      int num_channels, float threshold, uint8_t occup_percent) :
+					      int num_channels, float threshold,
+					      uint8_t occup_percent) :
 	    gr::sync_block ("sensing_energy",
 			    gr::io_signature::make (1, 1, sizeof(gr_complex)),
 			    gr::io_signature::make (0, 0, 0)),
@@ -53,24 +54,28 @@ namespace gr
 	    d_num_channels (num_channels),
 	    d_fft_queue (0),
 	    d_fft_cnt (1),
-	    d_subs_per_channel(floor(d_fft_size/num_channels)),
+	    d_cycles_nf_left (floor(0.1 / d_sec_per_fft)),
+	    d_subs_per_channel (floor (d_fft_size / d_num_channels)),
 	    d_samp_rate (samp_rate),
 	    d_nf_est (nf_est),
-	    d_occup_percent(occup_percent*0.01),
+	    d_occup_percent (occup_percent * 0.01),
 	    d_noise_floor (noise_floor),
 	    d_sec_per_fft (d_fft_size / d_samp_rate),
-	    d_cycles_nf_left (0.1 / d_sec_per_fft),
-	    d_threshold(threshold)
+	    d_threshold (threshold)
     {
       d_fft = new fft::fft_complex (d_fft_size, true, 1);
+      d_fft_in = d_fft->get_inbuf ();
+
       d_fftshift = (gr_complex*) volk_malloc ((d_fft_size) * sizeof(gr_complex),
-					      volk_get_alignment());
-      d_psd = (float*) volk_malloc ((d_fft_size) * sizeof(float), volk_get_alignment());
-      d_flat_top_win = (float*) volk_malloc ((d_fft_size) * sizeof(float), volk_get_alignment());
+					      volk_get_alignment ());
+      d_psd = (float*) volk_malloc ((d_fft_size) * sizeof(float),
+				    volk_get_alignment ());
+      d_flat_top_win = (float*) volk_malloc ((d_fft_size) * sizeof(float),
+					     volk_get_alignment ());
       d_noise_floor_vec_db = (float*) volk_malloc ((d_fft_size) * sizeof(float),
-						   volk_get_alignment());
+						   volk_get_alignment ());
       d_channel_stats = (float*) volk_malloc ((d_num_channels) * sizeof(float),
-						   volk_get_alignment());
+					      volk_get_alignment ());
 
       /* Calculation of Flat-top window */
       for (size_t i = 0; i < d_fft_size; i++) {
@@ -106,7 +111,7 @@ namespace gr
       volk_free (d_psd);
       volk_free (d_flat_top_win);
       volk_free (d_noise_floor_vec_db);
-      volk_free(d_channel_stats);
+      volk_free (d_channel_stats);
     }
 
     int
@@ -114,36 +119,27 @@ namespace gr
 			       gr_vector_const_void_star &input_items,
 			       gr_vector_void_star &output_items)
     {
-      /* Create pointer to the fft inbuf */
-      gr_complex *fft_in = d_fft->get_inbuf ();
       /* Create pointer to the input data */
       const gr_complex *in = (const gr_complex *) input_items[0];
 
       d_fft_queue = noutput_items / d_fft_size;
       d_fft_cnt = 0;
 
-      //std::cout << "ENERGY METHOD! -> " << d_fft_queue << std::endl;
-
       switch (d_mode)
 	{
 	case NOISE_FLOOR_ESTIMATION:
 
-	  //std::cout << "NOISE_FLOOR_ESTIMATION!" << std::endl;
-
 	  while (d_fft_cnt < d_fft_queue) {
 	    if (d_cycles_nf_left > 0) {
 
-	      est_psd (fft_in, in + d_fft_cnt * d_fft_size);
-
-	      volk_32f_x2_max_32f (d_noise_floor_vec_db, d_psd,
-				   d_noise_floor_vec_db, d_fft_size);
+	      refresh_nf (in);
 
 	      d_cycles_nf_left--;
 	      d_fft_cnt++;
 	    }
 	    else {
 	      d_mode = SPECTRUM_SENSING;
-	      add_to_nf(d_threshold);
+	      add_to_nf (d_threshold);
 	      break;
 	    }
 	  }
@@ -151,48 +147,61 @@ namespace gr
 
 	case SPECTRUM_SENSING:
 
-	  //std::cout << "SPECTRUM_SENSING!" << std::endl;
-
 	  while (d_fft_cnt < d_fft_queue) {
-	    est_psd (fft_in, in + d_fft_cnt * d_fft_size);
-	    volk_32f_x2_subtract_32f(d_psd, d_noise_floor_vec_db, d_psd, d_fft_size);
 
-	    /* Get the signs */
-	    for(int i=0;i<d_fft_size;i++){
-
-	      d_psd[i] = d_psd[i]<0;
-	    }
-
-	    for(int i=0;i<d_num_channels;i++){
-
-	      volk_32f_accumulator_s32f(d_channel_stats+i, d_psd+i*d_subs_per_channel, d_subs_per_channel);
-	      d_channel_stats[i] = d_channel_stats[i]> d_occup_percent*d_subs_per_channel;
-	    }
-
-	    message_print(d_channel_stats, d_num_channels);
+	    sense_and_decide (in);
+	    message_print (d_channel_stats, d_num_channels);
 
 	    d_fft_cnt++;
 	  }
 	  break;
 	}
-
       return noutput_items;
     }
 
     void
-    sensing_energy_impl::message_print(float *vector, int vector_size){
+    sensing_energy_impl::sense_and_decide (const gr_complex *in)
+    {
+      calculate_psd (in + d_fft_cnt * d_fft_size);
+      volk_32f_x2_subtract_32f (d_psd, d_noise_floor_vec_db, d_psd, d_fft_size);
 
-       pmt::pmt_t vector_combined = pmt::init_f32vector (vector_size,
-							 vector);
-       message_port_pub (pmt::mp ("out"), vector_combined);
+      /* Get the signs */
+      for (int i = 0; i < d_fft_size; i++) {
+
+	d_psd[i] = d_psd[i] < 0;
+      }
+
+      for (int i = 0; i < d_num_channels; i++) {
+
+	volk_32f_accumulator_s32f (d_channel_stats + i,
+				   d_psd + i * d_subs_per_channel,
+				   d_subs_per_channel);
+	d_channel_stats[i] = d_channel_stats[i]
+	    > d_occup_percent * d_subs_per_channel;
+      }
     }
 
     void
-    sensing_energy_impl::est_psd (gr_complex *fft_in, const gr_complex *in)
+    sensing_energy_impl::refresh_nf (const gr_complex *in)
     {
+      calculate_psd (in + d_fft_cnt * d_fft_size);
 
+      volk_32f_x2_max_32f (d_noise_floor_vec_db, d_psd, d_noise_floor_vec_db,
+			   d_fft_size);
+    }
+
+    void
+    sensing_energy_impl::message_print (float *vector, int vector_size)
+    {
+      pmt::pmt_t vector_combined = pmt::init_f32vector (vector_size, vector);
+      message_port_pub (pmt::mp ("out"), vector_combined);
+    }
+
+    void
+    sensing_energy_impl::calculate_psd (const gr_complex *in)
+    {
       /* Apply flat-top window */
-      volk_32fc_32f_multiply_32fc (fft_in, in, d_flat_top_win, d_fft_size);
+      volk_32fc_32f_multiply_32fc (d_fft_in, in, d_flat_top_win, d_fft_size);
 
       /* Perform fft */
       d_fft->execute ();
@@ -203,8 +212,8 @@ namespace gr
 	      sizeof(gr_complex) * (d_fft_size / 2));
 
       /* Calculate psd */
-      volk_32fc_s32f_x2_power_spectral_density_32f (d_psd, d_fftshift, d_fft_size, 1,
-						    d_fft_size);
+      volk_32fc_s32f_x2_power_spectral_density_32f (d_psd, d_fftshift,
+						    d_fft_size, 1, d_fft_size);
     }
 
     void

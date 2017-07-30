@@ -23,22 +23,32 @@
 
 #include <spy/sensing_eigen.h>
 
-namespace gr {
-  namespace spy {
+namespace gr
+{
+  namespace spy
+  {
 
     class sensing_eigen_impl : public sensing_eigen
     {
-     private:
-      // Nothing to declare in this block.
+    private:
+      size_t d_fft_size;
+      size_t d_fft_queue;
+      size_t d_fft_cnt;
+      size_t d_cycles_nf_left;
 
-     public:
-      sensing_eigen_impl(size_t fft_size, double samp_rate);
-      ~sensing_eigen_impl();
+      double d_samp_rate;
+
+      uint8_t d_mode;
+
+    public:
+      sensing_eigen_impl (size_t fft_size, double samp_rate, bool nf_est,
+			   float noise_floor);
+      ~sensing_eigen_impl ();
 
       // Where all the action really happens
-      int work(int noutput_items,
-         gr_vector_const_void_star &input_items,
-         gr_vector_void_star &output_items);
+      int
+      work (int noutput_items, gr_vector_const_void_star &input_items,
+	    gr_vector_void_star &output_items);
     };
 
   } // namespace spy

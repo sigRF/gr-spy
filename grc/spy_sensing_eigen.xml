@@ -1,0 +1,95 @@
+<?xml version="1.0"?>
+<block>
+	<name>Eigenvalue sense</name>
+	<key>spy_sensing_eigen</key>
+	<category>[Spy]</category>
+	<import>import spy</import>
+	<make>spy.sensing_eigen($fft_size, $samp_rate, $nf_est,
+		$noise_floor)</make>
+	<!-- Make one 'param' node for every Parameter you want settable from the 
+		GUI. Sub-nodes: * name * key (makes the value accessible as $keyname, e.g. 
+		in the make node) * type -->
+	<param>
+		<name>FFT size</name>
+		<key>fft_size</key>
+		<value>1024</value>
+		<type>int</type>
+	</param>
+
+	<param>
+		<name>Sampling rate</name>
+		<key>samp_rate</key>
+		<value>1000000</value>
+		<type>float</type>
+	</param>
+
+	<param>
+		<name>Auto-tune Noise Floor</name>
+		<key>nf_est</key>
+		<value>False</value>
+		<type>enum</type>
+		<option>
+			<name>Yes</name>
+			<key>True</key>
+		</option>
+		<option>
+			<name>No</name>
+			<key>False</key>
+		</option>
+	</param>
+
+	<param>
+		<name>Manual Noise floor</name>
+		<key>noise_floor</key>
+		<value>-100</value>
+		<type>float</type>
+	</param>
+
+	<param>
+		<name>Channel number</name>
+		<key>num_channels</key>
+		<value>8</value>
+		<type>int</type>
+	</param>
+
+	<param>
+		<name>Threshold(dB)</name>
+		<key>threshold</key>
+		<value>10</value>
+		<type>float</type>
+	</param>
+
+	<param>
+		<name>Occupancy percentage(%)</name>
+		<key>occup_percent</key>
+		<value>20</value>
+		<type>int</type>
+	</param>
+	
+	<check>($occup_percent &gt; 0) and ($occup_percent &lt;= 100)</check>
+	<check>$threshold &gt;= 0</check>
+	<check>$num_channels &gt; 0</check>
+	<check>$samp_rate &gt; 1000</check> 
+	<check>($fft_size > 0) and (($fft_size%2) == 0)</check>
+	
+
+	<!-- Make one 'sink' node per input. Sub-nodes: * name (an identifier for 
+		the GUI) * type * vlen * optional (set to 1 for optional inputs) -->
+	<sink>
+		<name>in</name>
+		<type>complex</type>
+	</sink>
+
+	<source>
+		<name>out</name>
+		<type>message</type>
+	</source>
+
+	<!-- Make one 'source' node per output. Sub-nodes: * name (an identifier 
+		for the GUI) * type * vlen * optional (set to 1 for optional inputs) -->
+
+	<doc>
+		Awesome sensing block!
+	</doc>
+
+</block>
